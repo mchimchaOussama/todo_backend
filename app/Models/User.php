@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable
 {
@@ -21,6 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'full_name', // added full_name
+        'phone_number', // added phone_number
+        'address', // added address
+        'image', // added image
     ];
 
     /**
@@ -45,4 +50,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+        public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+        public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+        public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
 }
