@@ -22,18 +22,22 @@ class TaskService
         return $this->taskRepository->getUserTasks($user);
     }
 
-    public function createTaskForUser(User $user, array $data)
-    {
-        $task = $this->taskRepository->createTask($user, $data);
+public function createTaskForUser(User $user, array $data)
+{
+    $task = $this->taskRepository->createTask($user, $data);
 
+    try {
         $notification = $user->notifications()->create([
             'message' => "Tâche '{$task->title}' créée avec succès"
         ]);
 
         event(new TaskCreated($task, $notification));
-
-        return $task;
+    } catch (\Exception $e) {
+        \Log::error('Notification or event error: ' . $e->getMessage());
     }
+
+    return $task;
+}
 
     public function updateTask(Task $task, array $data)
     {

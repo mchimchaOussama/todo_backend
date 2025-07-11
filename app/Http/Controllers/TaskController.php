@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskController extends Controller
 {
+      use AuthorizesRequests;
     protected $taskService;
 
     public function __construct(TaskService $taskService)
