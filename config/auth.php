@@ -36,10 +36,15 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'api' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [ //  configuration
+        'driver' => 'jwt', //  Laravel Sanctum
+        'provider' => 'users',
+        'hash' => false,
+    ],
     ],
 
     /*
