@@ -11,16 +11,19 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->group(function () {
-    Route::get('/auth/me', [AuthController::class, 'me']);
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    
-    Route::apiResource('tasks', TaskController::class);
-    Route::apiResource('notifications', NotificationController::class)->only(['index']);
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-Broadcast::routes(['middleware' => ['auth:api']]);
+Route::middleware('auth:api')->group(function () {
+ 
+    Route::post('/tasks', [TaskController::class, 'store']);
+     Route::get('/tasks', [TaskController::class, 'index']);
+    Route::get('/tasks/{task}', [TaskController::class, 'show']);    
+    Route::put('/tasks/{task}', [TaskController::class, 'update']);   
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 });
 
 
+  

@@ -36,4 +36,20 @@ class TaskCreated
             new PrivateChannel('user.' . $this->task->user_id),
         ];
     }
+    
+     public function broadcastAs(): string
+    {
+        return 'task.created';
+    }
+
+    /**
+     * The data to broadcast.
+     */
+    public function broadcastWith(): array
+    {
+        return [
+            'task' => $this->task,
+            'notification' => $this->notification,
+        ];
+    }
 }

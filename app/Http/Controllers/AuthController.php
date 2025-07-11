@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Storage;
+
 
 class AuthController extends Controller
 {
@@ -17,18 +19,27 @@ class AuthController extends Controller
             'phone_number' => 'required|string|max:20',
             'address' => 'required|string|max:255',
             'password' => 'required|string|min:6|confirmed',
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // image validation
+
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
+ $imagePath = null;
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time().'_'.$image->getClientOriginalName();
+        $imagePath = $image->storeAs('uploads', $imageName, 'public');
+    }
         $user = User::create([
             'full_name' => $request->full_name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'password' => Hash::make($request->password),
+            'image'         => $imagePath, 
+
         ]);
 
         $token = JWTAuth::fromUser($user);

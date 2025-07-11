@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\TaskRepository;
 use App\Models\Task;
-use App\Models\Notification;
-use App\Events\TaskCreated;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
 
 class TaskController extends Controller
 {
-    protected $taskRepository;
+    protected $taskService;
 
-    public function __construct(TaskRepository $taskRepository)
+    public function __construct(TaskService $taskService)
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskService = $taskService;
     }
 
     public function index()
     {
-        $tasks = $this->taskRepository->getUserTasks(auth()->user());
+        $tasks = $this->taskService->getTasksForUser(auth()->user());
         return response()->json(['tasks' => $tasks]);
     }
 
@@ -30,18 +28,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $task = $this->taskRepository->createTask(
-            auth()->user(),
-            $request->all()
-        );
-        
-        // Create notification
-        $notification = auth()->user()->notifications()->create([
-            'message' => "Tâche '{$task->title}' créée avec succès"
-        ]);
-        
-        // Broadcast event
-        event(new TaskCreated($task, $notification));
+        $task = $this->taskService->createTaskForUser(auth()->user(), $request->all());
 
         return response()->json($task, 201);
     }
@@ -55,21 +42,24 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $this->authorize('update', $task);
-        
+
         $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'completed' => 'sometimes|boolean',
         ]);
 
-        $task = $this->taskRepository->updateTask($task, $request->all());
-        return response()->json($task);
+        $updatedTask = $this->taskService->updateTask($task, $request->all());
+
+        return response()->json($updatedTask);
     }
 
     public function destroy(Task $task)
     {
         $this->authorize('delete', $task);
-        $this->taskRepository->deleteTask($task);
+
+        $this->taskService->deleteTask($task);
+
         return response()->json(null, 204);
     }
 }
