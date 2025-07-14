@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Events\TaskCreated;
 use App\Repositories\TaskRepository;
+use Illuminate\Support\Facades\Log;
 
 class TaskService
 {
@@ -33,7 +34,7 @@ public function createTaskForUser(User $user, array $data)
 
         event(new TaskCreated($task, $notification));
     } catch (\Exception $e) {
-        \Log::error('Notification or event error: ' . $e->getMessage());
+        Log::error('Notification or event error: ' . $e->getMessage());
     }
 
     return $task;

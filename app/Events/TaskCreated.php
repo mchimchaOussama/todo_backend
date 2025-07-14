@@ -99,9 +99,9 @@ class TaskCreated implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        return [
-            'task' => $this->task,
-            'notification' => $this->notification,
-        ];
+    return [
+        'task' => $this->task->toArray(),
+        'notification' => $this->notification->toArray(),
+    ];
     }
 }

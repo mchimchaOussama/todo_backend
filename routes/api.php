@@ -17,7 +17,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
- 
+  Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/tasks', [TaskController::class, 'store']);
      Route::get('/tasks', [TaskController::class, 'index']);
     Route::get('/tasks/{task}', [TaskController::class, 'show']);    
